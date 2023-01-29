@@ -4,6 +4,11 @@ use std::ops::Index;
 pub enum OpCode {
    Return,
    Constant,
+   Negate,
+   Add,
+   Subtract,
+   Multiply,
+   Divide,
    Unknown(u8),
 }
 
@@ -15,7 +20,11 @@ pub struct Chunk {
 
 impl Chunk {
    pub fn new() -> Chunk {
-      Chunk { code: Vec::new(), constants: Vec::new(), lines: Vec::new() }
+      Chunk {
+         code: Vec::new(),
+         constants: Vec::new(),
+         lines: Vec::new(),
+      }
    }
 
    pub fn add_code(&mut self, code: u8, line: i32) {
@@ -54,6 +63,11 @@ impl Into<OpCode> for u8 {
       match self {
          0 => OpCode::Return,
          1 => OpCode::Constant,
+         2 => OpCode::Negate,
+         3 => OpCode::Add,
+         4 => OpCode::Subtract,
+         5 => OpCode::Multiply,
+         6 => OpCode::Divide,
          _ => OpCode::Unknown(self),
       }
    }
@@ -64,6 +78,11 @@ impl Into<u8> for OpCode {
       match self {
          OpCode::Return => 0,
          OpCode::Constant => 1,
+         OpCode::Negate => 2,
+         OpCode::Add => 3,
+         OpCode::Subtract => 4,
+         OpCode::Multiply => 5,
+         OpCode::Divide => 6,
          OpCode::Unknown(opcode) => opcode,
       }
    }

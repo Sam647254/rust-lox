@@ -3,7 +3,7 @@ use std::{
    ops::{Add, Div, Mul, Sub},
 };
 
-use crate::chunk::{Chunk, OpCode};
+use crate::{chunk::{Chunk, OpCode}, compiler};
 
 pub struct VM {
    chunk: Chunk,
@@ -19,12 +19,21 @@ pub enum InterpreterResult {
 }
 
 impl VM {
+   pub fn new_empty() -> VM {
+      Self::new(Chunk::new())
+   }
+
    pub fn new(chunk: Chunk) -> VM {
       VM {
          chunk,
          ip: 0,
          stack: LinkedList::new(),
       }
+   }
+
+   pub fn interpret(&mut self, line: &str) -> InterpreterResult {
+      compiler::compile(line);
+      todo!()
    }
 
    pub fn run(&mut self) -> InterpreterResult {

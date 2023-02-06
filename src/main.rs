@@ -1,4 +1,4 @@
-use std::{env::args, process::ExitCode, io::{self, stdin, Read}, fs::File};
+use std::{env::args, process::ExitCode, io::{self, stdin, Read, stdout, Write}, fs::File};
 
 use chunk::{Chunk, OpCode};
 use vm::VM;
@@ -53,6 +53,7 @@ fn run_repl() -> vm::InterpreterResult {
    let mut line = String::new();
    let mut vm = vm::VM::new_empty();
    print!("> ");
+   stdout().flush().unwrap();
    while let Ok(_) = stdin().read_line(&mut line) {
       match vm.interpret(&line) {
         vm::InterpreterResult::Ok => todo!(),

@@ -6,6 +6,12 @@ pub struct Token<'a> {
    pub line: usize,
 }
 
+impl Token<'_> {
+   pub fn is_eof(&self) -> bool {
+      self.token_type == TokenType::EOF
+   }
+}
+
 #[derive(PartialEq, Debug, Clone)]
 pub enum TokenType<'a> {
    LeftParen,

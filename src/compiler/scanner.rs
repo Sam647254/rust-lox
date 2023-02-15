@@ -33,6 +33,7 @@ impl<'a> Scanner<'a> {
             '}' => self.make_token(TokenType::RightBrace),
             ';' => self.make_token(TokenType::Semicolon),
             ',' => self.make_token(TokenType::Comma),
+            '.' => self.make_token(TokenType::Dot),
             '-' => self.make_token(TokenType::Minus),
             '+' => self.make_token(TokenType::Plus),
             '/' => self.make_token(TokenType::Slash),
@@ -67,6 +68,7 @@ impl<'a> Scanner<'a> {
             },
             '"' => self.string(),
             c if c.is_digit(10) => self.number(),
+            c if c.is_ascii_alphabetic() => self.identifier(),
             _ => self.error_token("Unexpected character".to_string())
          }
          None => self.make_token(TokenType::EOF)
@@ -75,8 +77,8 @@ impl<'a> Scanner<'a> {
 
    fn make_token(&self, token_type: TokenType<'a>) -> Token {
       Token {
+         lexeme: if token_type == TokenType::EOF { "" } else { &self.source[self.start..self.current] },
          token_type,
-         lexeme: &self.source[self.start..self.current+1],
          line: self.line
       }
    }
@@ -136,6 +138,8 @@ impl<'a> Scanner<'a> {
       while let Some(&c) = self.chars.peek() {
          if c.is_digit(10) {
             self.advance();
+         } else {
+            break;
          }
       }
 
@@ -149,5 +153,36 @@ impl<'a> Scanner<'a> {
       };
 
       self.make_token(TokenType::Number(self.source[self.start..self.current].parse().unwrap()))
+   }
+
+   fn identifier(&mut self) -> Token {
+      while let Some(&c) = self.chars.peek() {
+         if c.is_digit(10) || c.is_ascii_alphabetic() {
+            self.advance();
+         } else {
+            break;
+         }
+      }
+      let identifier = &self.source[self.start..self.current];
+      let identifier_type = match identifier {
+         "and" => TokenType::And,
+         "class" => TokenType::Class,
+         "else" => TokenType::Else,
+         "false" => TokenType::False,
+         "for" => TokenType::For,
+         "fun" => TokenType::Fun,
+         "if" => TokenType::If,
+         "nil" => TokenType::Nil,
+         "or" => TokenType::Or,
+         "print" => TokenType::Print,
+         "return" => TokenType::Return,
+         "super" => TokenType::Super,
+         "this" => TokenType::This,
+         "true" => TokenType::True,
+         "var" => TokenType::Var,
+         "while" => TokenType::While,
+         _ => TokenType::Identifier(identifier)
+      };
+      self.make_token(identifier_type)
    }
 }
